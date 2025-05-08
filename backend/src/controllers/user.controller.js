@@ -66,3 +66,33 @@ export const sendFriendRequestController = async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 }
+
+export const acceptFriendRequestController = async (req, res) => {
+    try{
+        const { id:requestId } = req.params;
+
+        const friendRequest = await friendRequestModel.findById(requestId);
+        if(!friendRequest) return res.status(404).json({ message: "Friend Request not found" });
+        if(friendRequest.recipient.toString() !== req.user._id){
+            return res.status(403).json({ message: "You are not authorized to accept this request" });
+        }
+
+        friendRequest.status = "accepted";
+        await friendRequest.save();
+
+        //addToSet is a method that adds elements to an array only if they do not already exists
+        await userModel.findByIdAndUpdate(friendRequest.sender, {       //adding id of the user in the friends array of current user
+            $addToSet: { friends: friendRequest.sender }
+        });
+
+        await userModel.findByIdAndUpdate(friendRequest.recipient, {    //adding id of the user in the friends array of requested user
+            $addToSet: { friends: friendRequest.sender }
+        });
+
+        res.status(200).json({ message: "Friend request accepted" });
+    }
+    catch(error){
+        console.log("Error in acceptFriendRequestController: ", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+}

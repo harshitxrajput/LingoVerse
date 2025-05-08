@@ -2,9 +2,10 @@ import express from 'express';
 
 import { isLoggedIn } from '../middlewares/auth.middleware.js';
 import {
-    getMyFriendsController,
     getRecommendedUsersController,
-    sendFriendRequestController
+    getMyFriendsController,
+    sendFriendRequestController,
+    acceptFriendRequestController
 } from '../controllers/user.controller.js';
 
 const router = express.Router();
@@ -16,5 +17,7 @@ router.get('/', getRecommendedUsersController);
 router.get('/friends', getMyFriendsController);
 
 router.post('/friend-request/:id', sendFriendRequestController);
+
+router.put('/friend-request/:id/accept', acceptFriendRequestController);
 
 export default router;
