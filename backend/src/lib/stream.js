@@ -16,10 +16,16 @@ export const createStreamUser = async (userData) => {
         return userData;
     }
     catch(error){
-        console.error("Error creating stream user: ", error);
+        console.error("Error creating stream user: ", error.message);
     }
 };
 
 export const generateStreamToken = (userId) => {
-    
+    try{
+        const userIdStr = userId.toString();
+        return streamClient.createToken(userIdStr);
+    }
+    catch(error){
+        console.log("Error in getStreamToken: ", error.message);
+    }
 };
