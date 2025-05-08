@@ -17,7 +17,7 @@ export const getRecommendedUsersController = async (req, res) => {
         res.status(200).json(recommendedUsers);
     }
     catch(error){
-        console.log("Error in getRecommendedUsersController: ", error);
+        console.log("Error in getRecommendedUsersController: ", error.message);
         res.status(500).json({ error: "Internal Server Error" });
     }
 }
@@ -29,7 +29,7 @@ export const getMyFriendsController = async (req, res) => {
         res.status(200).json(user.friends);
     }
     catch(error){
-        console.log("Error in getMyFriendsController: ", error);
+        console.log("Error in getMyFriendsController: ", error.message);
         res.status(500).json({ error: "Internal Server Error" });
     }
 }
@@ -62,7 +62,7 @@ export const sendFriendRequestController = async (req, res) => {
         res.status(201).json(friendRequest);
     }
     catch(error){
-        console.log("Error in sendFriendRequestController: ", error);
+        console.log("Error in sendFriendRequestController: ", error.message);
         res.status(500).json({ error: "Internal Server Error" });
     }
 }
@@ -92,7 +92,27 @@ export const acceptFriendRequestController = async (req, res) => {
         res.status(200).json({ message: "Friend request accepted" });
     }
     catch(error){
-        console.log("Error in acceptFriendRequestController: ", error);
+        console.log("Error in acceptFriendRequestController: ", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+}
+
+export const getFriendRequestController = async (req, res) => {
+    try{
+        const incomingRequests = await friendRequestModel.find({
+            recipient: req.user._id,
+            status: "pending"
+        }).populate("sender", "fullName profilePic nativeLanguage learningLanguage");
+
+        const acceptedRequests = await friendRequestModel.find({
+            recipient: req.user._id,
+            status: "accepted"
+        }).populate("sender", "fullName, profilePic");
+
+        res.status(200).json({ incomingRequests, acceptedRequests });
+    }
+    catch(error){
+        console.log("Error in getFriendRequestController: ", error.message);
         res.status(500).json({ error: "Internal Server Error" });
     }
 }
