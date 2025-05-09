@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { Navigate, Route, Routes } from 'react-router'
 
 import HomePage from './pages/HomePage'
@@ -11,6 +11,7 @@ import OnBoardingPage from './pages/OnBoardingPage'
 
 import { Toaster } from 'react-hot-toast'
 import PageLoader from './components/PageLoader'
+import Layout from './components/Layout.jsx'
 
 import useAuthUser from './hooks/useAuthUser.js'
 
@@ -23,15 +24,15 @@ const App = () => {
     if(isLoading) return<PageLoader />
 
     return (
-        <div className='h-screen' data-theme="night">
+        <div className='h-screen' data-theme="forest">
             <Routes>
-                <Route path='/' element={isAuthenticated && isOnboarded ? (<HomePage />) : (<Navigate to={!isAuthenticated ? "/signup" : "/onboarding"} />)} />
+                <Route path='/' element={isAuthenticated && isOnboarded ? (<Layout showSideBar={true}><HomePage /></Layout>) : (<Navigate to={!isAuthenticated ? "/signup" : "/onboarding"} />)} />
 
                 <Route path='/signup' element={!isAuthenticated ? <SignUpPage /> : <Navigate to={isOnboarded ? "/" : "/onboarding"} />} />
 
                 <Route path='/login' element={!isAuthenticated ? <LoginPage /> : <Navigate to={isOnboarded ? "/" : "/onboarding"} />} />
 
-                <Route path='/notifications' element={isAuthenticated ? <NotificationsPage /> : <Navigate to={"/signup"} />} />
+                <Route path='/notifications' element={isAuthenticated ? (<Layout showSideBar={true}><NotificationsPage /></Layout>) : <Navigate to={"/signup"} />} />
 
                 <Route path='/call' element={isAuthenticated ? <CallPage /> : <Navigate to={"/signup"} />} />
 
