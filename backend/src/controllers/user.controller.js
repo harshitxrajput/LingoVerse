@@ -24,7 +24,7 @@ export const getRecommendedUsersController = async (req, res) => {
 
 export const getMyFriendsController = async (req, res) => {
     try{
-        const user = await userModel.findById(req.user._id).select("friends").populate("friends", "fullName, profilePic nativeLanguage, learningLanguage");
+        const user = await userModel.findById(req.user._id).select("friends").populate("friends fullName profilePic nativeLanguage learningLanguage");
 
         res.status(200).json(user.friends);
     }
@@ -70,10 +70,11 @@ export const sendFriendRequestController = async (req, res) => {
 export const acceptFriendRequestController = async (req, res) => {
     try{
         const { id:requestId } = req.params;
+        const userId = req.user._id.toString();
 
         const friendRequest = await friendRequestModel.findById(requestId);
         if(!friendRequest) return res.status(404).json({ message: "Friend Request not found" });
-        if(friendRequest.recipient.toString() !== req.user._id){
+        if(friendRequest.recipient.toString() !== userId){
             return res.status(403).json({ message: "You are not authorized to accept this request" });
         }
 
@@ -82,7 +83,7 @@ export const acceptFriendRequestController = async (req, res) => {
 
         //addToSet is a method that adds elements to an array only if they do not already exists
         await userModel.findByIdAndUpdate(friendRequest.sender, {       //adding id of the user in the friends array of current user
-            $addToSet: { friends: friendRequest.sender }
+            $addToSet: { friends: friendRequest.recipient }
         });
 
         await userModel.findByIdAndUpdate(friendRequest.recipient, {    //adding id of the user in the friends array of requested user
@@ -105,9 +106,9 @@ export const getFriendRequestController = async (req, res) => {
         }).populate("sender", "fullName profilePic nativeLanguage learningLanguage");
 
         const acceptedRequests = await friendRequestModel.find({
-            recipient: req.user._id,
+            sender: req.user._id,
             status: "accepted"
-        }).populate("sender", "fullName, profilePic");
+        }).populate("recipient", "fullName profilePic");
 
         res.status(200).json({ incomingRequests, acceptedRequests });
     }

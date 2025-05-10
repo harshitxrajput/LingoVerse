@@ -1,5 +1,6 @@
 import { Link } from 'react-router';
 import { LANGUAGE_TO_FLAG } from '../constants/index.js';
+import { capitalize } from '../lib/utils.js';
 
 const FriendCard = ({ friend }) => {
     return (
@@ -16,11 +17,11 @@ const FriendCard = ({ friend }) => {
                 <div className='flex flex-wrap gap-1.5 mb-3'>
                     <span className='badge badge-secondary text-xs'>
                         {getLanguageFlag(friend.nativeLanguage)}
-                        Native: {friend.nativeLanguage}
+                        Native: {capitalize(friend.nativeLanguage)}
                     </span>
                     <span className='badge badge-secondary text-xs'>
                         {getLanguageFlag(friend.learningLanguage)}
-                        Learning: {friend.learningLanguage}
+                        Learning: {capitalize(friend.learningLanguage)}
                     </span>
                 </div>
 
